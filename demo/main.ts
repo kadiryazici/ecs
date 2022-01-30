@@ -6,9 +6,27 @@ import { createWorld } from '../src/World';
 
 // Lets get our canvas and context.
 const canvas = document.querySelector('canvas')!;
-canvas.width = window.innerWidth;
-canvas.height = (window.innerWidth / 16) * 9;
 
+const updateCanvasBounds = () => {
+   let width = window.innerWidth;
+   let height = window.innerHeight;
+
+   if ((window.innerWidth / 16) * 9 > window.innerHeight) {
+      height = window.innerHeight;
+      width = (window.innerHeight * 16) / 9;
+   } else {
+      width = window.innerWidth;
+      height = (window.innerWidth / 16) * 9;
+   }
+
+   canvas.width = width;
+   canvas.height = height;
+
+   canvas.style.setProperty('width', `${width}px`);
+   canvas.style.setProperty('height', `${height}px`);
+};
+
+updateCanvasBounds();
 document.body.style.margin = '0';
 
 const context = canvas.getContext('2d')!;
@@ -119,10 +137,7 @@ canvas.addEventListener('mousedown', (e) => {
    }
 });
 
-window.addEventListener('resize', () => {
-   canvas.width = window.innerWidth;
-   canvas.height = (window.innerWidth / 16) * 9;
-});
+window.addEventListener('resize', updateCanvasBounds);
 
 const update = () => {
    requestAnimationFrame(update);
