@@ -1,6 +1,6 @@
 {
    "name": "@kadiryazici/ecs",
-   "version": "0.0.0",
+   "version": "0.0.1",
    "main": "./dist/ecs.umd.js",
    "module": "./dist/ecs.es.js",
    "types": "./dist/src/lib.d.ts",
@@ -10,7 +10,8 @@
    ],
    "scripts": {
       "dev": "cross-env MODE=demo vite",
-      "build": "cross-env MODE=production vite build"
+      "build": "cross-env MODE=production vite build",
+      "build:demo": "cross-env MODE=demo vite build"
    },
    "devDependencies": {
       "@types/node": "16.11.21",

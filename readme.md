@@ -16,6 +16,8 @@ yarn add @kadiryazici/ecs
 ## Components
 To create component we use `defineComponent` function. This function can take `undefined` or an `object` as parameter. Given object is always default state.
 ```ts
+import { defineComponent } from '@kadiryazici/ecs';
+
 const Velocity = defineComponent({
    x: 0,
    y: 0,
@@ -38,6 +40,8 @@ You can create a new component instance and state like this but we won't use the
 Entities are `entities` that hold bunch of components. To create an entity we use `createEntity` function. This function can take an array of components.
 
 ```ts
+import { defineComponent, createEntity } from '@kadiryazici/ecs';
+
 const Velocity = defineComponent({
    x: 0,
    y: 50
@@ -72,6 +76,8 @@ Player.remove(Name);
 
 World is a `world` that holds entities.
 ```ts
+import { createWorld } from '@kadiryazici/ecs';
+
 const world = createWorld();
 ```
 To add an entity to our world we can use `insert` function.
@@ -89,6 +95,8 @@ Nice! now we know how to create Entities, Worlds and Components, now it's time t
 Queries are `queries` that filter by components in given world and then return `States Tuple` of `Components` of found `Entities`.
 
 ```ts
+import { createQuery } from '@kadiryazici/ecs';
+
 // This query will search for entities that has Name component, and will return an array of [name];
 const VelocityQuery = createQuery([Name]);
 const updateVelocities = () => {
@@ -111,6 +119,8 @@ const updateVelocities = () => {
 You can search for multiple components as well.
 
 ```ts
+import { createQuery } from '@kadiryazici/ecs';
+
 const VelocityNameQuery = createQuery([Name, Velocity]);
 const doSomething = () => {
    const query = VelocityNameQuery.exec(world);
@@ -129,6 +139,8 @@ So far we only queried components we want to receive, what if we want to receive
 For this we can use `With` modifier.
 
 ```ts
+import { defineComponent, createQuery, With } from '@kadiryazici/ecs';
+
 // Lets create a third component for our queries.
 const Bounds = defineComponent({
    width: 0,
@@ -144,6 +156,8 @@ const NameQueryWithVelocity = createQuery([Name], With(Velocity))
 
 With modifier can have infinite number of components.
 ```ts
+import { createQuery, With } from '@kadiryazici/ecs';
+
 const NameQueryWithVelocity = createQuery([Name], With(Velocity, Bounds, SometComponent));
 const doSomething = () => {
    const query = NameQueryWithVelocity.exec(world);
@@ -155,6 +169,8 @@ const doSomething = () => {
 
 Multiple received components and `With` modifier.
 ```ts
+import { createQuery, With } from '@kadiryazici/ecs';
+
 const NameBoundsQuery = createQuery([Name, Bounds], With(Velocity, SomeComponent));
 const doSomething = () => {
    const query = NameBoundsQuery.exec(world);
@@ -170,6 +186,8 @@ const doSomething = () => {
 
 If you want you can repeat modifiers, they will be merged when the query executes.
 ```ts
+import { createQuery } from '@kadiryazici/ecs';
+
 const Query = createQuery(
    [Name, Velocity, Color],
    With(Shadow, Light),
@@ -180,6 +198,8 @@ const Query = createQuery(
 We know about `With` modifier and how to use it, what if we want to receive `Name` component of entities that don't have `Velocity` and `Bounds` component.
 
 ```ts
+import { createQuery, Without, With } from '@kadiryazici/ecs';
+
 const NameQuery = createQuery(
    [Name],
    Without(Velocity, Bounds)
@@ -214,6 +234,8 @@ Systems are just `functions` that run queries and manages its states'. You actua
 Let's create a `System` that updates `Position` by `Velocity` of Entities that has `RigidBody` component but don't have `FixedBody`. 
 
 ```ts
+import { createQuery, With, Without, createWorld, createEntity } from '@kadiryazici/ecs';
+
 const PositionVelocityQuery = createQuery(
    [Position, Velocity],
    With(RigidBody),
@@ -243,6 +265,8 @@ movementSystem(world);
 Now we know concepts, lets create a sample project that draws rectangles to canvas and updates their positions by velocities.
 
 ```ts
+import { defineComponent, createQuery, createEntity, With } from '@kadiryazici/ecs';
+
 // Lets get our canvas and context.
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');

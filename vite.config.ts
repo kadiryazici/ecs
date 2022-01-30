@@ -23,6 +23,7 @@ const productionConfig = defineConfig({
 
 const demoConfig = defineConfig({
    root: path.join(root, 'demo'),
+   base: '/base/',
    build: {
       emptyOutDir: true,
       outDir: path.join(root, 'dist-demo'),
