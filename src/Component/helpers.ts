@@ -1,9 +1,10 @@
 import { Type } from '../Type';
 import { ComponentInstance, ComponentState } from './types';
 
-export const isComponent = <State = ComponentState>(value: unknown): value is ComponentInstance<State> => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isComponent = <State = ComponentState>(value: any): value is ComponentInstance<State> => {
    if (typeof value !== 'object' || Array.isArray(value)) return false;
-   // @ts-expect-error we cannot type unknown value :(
+
    return value.type === Type.Component;
 };
 
