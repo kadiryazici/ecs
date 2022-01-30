@@ -10,8 +10,10 @@
    ],
    "scripts": {
       "dev": "cross-env MODE=demo vite",
-      "build": "cross-env MODE=production vite build",
-      "build:demo": "cross-env MODE=demo vite build"
+      "build": "npm run test && cross-env MODE=production vite build",
+      "build:demo": "cross-env MODE=demo vite build",
+      "test": "vitest",
+      "test:watch": "vitest watch"
    },
    "devDependencies": {
       "@types/node": "16.11.21",
@@ -21,6 +23,7 @@
       "prettier": "2.5.1",
       "typescript": "4.5.5",
       "vite": "2.7.13",
-      "vite-plugin-dts": "0.9.9"
+      "vite-plugin-dts": "0.9.9",
+      "vitest": "0.2.5"
    }
 }
