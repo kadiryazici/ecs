@@ -3,12 +3,12 @@ import { Entity } from '../Entity/types';
 import { World } from '../World/types';
 import { QueryType } from './constants';
 import { findComponentInEntity } from './helpers';
-import { MapQueryReturn, QueryModifier } from './types';
+import { MapQueryReturn, Query, QueryModifier } from './types';
 
 export function createQuery<T extends [Component, ...Component[]], QueryReturn = MapQueryReturn<T>>(
-   components: T,
+   queryComponents: T,
    ...modifiers: QueryModifier[]
-) {
+): Query<QueryReturn[]> {
    const id = Symbol('id');
 
    const withModifiers = new Set<Component>();
@@ -20,39 +20,63 @@ export function createQuery<T extends [Component, ...Component[]], QueryReturn =
       });
    });
 
-   const componentsID = components.map((c) => c.id);
-
    return {
       get id() {
          return id;
       },
 
-      execute(world: World) {
-         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-         const foundStates = [] as QueryReturn[];
+      exec(world: World) {
+         let foundEntities = [] as (Entity | null)[];
 
          for (const entity of world.entities) {
             const foundComponents = [] as (ComponentInstance | null)[];
-            for (const component of components) {
+
+            for (const component of queryComponents) {
                foundComponents.push(findComponentInEntity(entity, component));
             }
+
             if (foundComponents.every(Boolean)) {
-               const states = foundComponents.map((c) => c!.state) as unknown as QueryReturn;
-               foundStates.push(states);
+               foundEntities.push(entity);
             }
          }
 
-         return foundStates;
+         foundEntities = foundEntities.map((entity) => {
+            if (entity) {
+               const foundComponents = [] as (ComponentInstance | null)[];
+
+               for (const component of withModifiers) {
+                  foundComponents.push(findComponentInEntity(entity, component));
+               }
+
+               if (foundComponents.every(Boolean)) {
+                  return entity;
+               }
+            }
+
+            return null!;
+         });
+
+         foundEntities = foundEntities.map((entity) => {
+            if (entity) {
+               const foundComponents = [] as (ComponentInstance | null)[];
+
+               for (const component of withoutModifiers) {
+                  foundComponents.push(findComponentInEntity(entity, component));
+               }
+
+               if (foundComponents.some(Boolean)) {
+                  return null!;
+               }
+            }
+
+            return entity;
+         });
+
+         return (foundEntities.filter(Boolean) as Entity[]).map((entity) => {
+            return queryComponents.map((component) => {
+               return entity.components.find((c) => c.id === component.id)!.state;
+            });
+         }) as unknown as QueryReturn[];
       },
    };
 }
-
-// const components = world.entities.map((entity) => {
-//    const componentIndex = entity.components.findIndex((component) => component.id === query.id);
-//    if (componentIndex >= 0) {
-//       return entity.components[componentIndex];
-//    }
-//    return null!;
-// });
-
-// return components.filter(Boolean).map((v) => v.state as State);

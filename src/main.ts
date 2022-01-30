@@ -27,92 +27,100 @@ const Color = defineComponent({
    value: [0, 0, 0, 0] as [number, number, number, number],
 });
 
-const Box = createEntity([
-   Name.new({
-      value: 'Box',
-   }),
-   Velocity.new({
-      x: 5,
-      y: 0,
-   }),
-   Bounds.new({
-      width: 50,
-      height: 50,
-   }),
-   Color.new({
-      value: [75, 28, 152, 1],
-   }),
-   Position.new({
-      x: 25,
-      y: 25,
-   }),
-]);
+const createBox = () =>
+   createEntity([
+      Name.new({
+         value: 'Box',
+      }),
+      Velocity.new({
+         x: 5,
+         y: 0,
+      }),
+      Bounds.new({
+         width: 50,
+         height: 50,
+      }),
+      Color.new({
+         value: [75, 28, 152, 1],
+      }),
+      Position.new({
+         x: 25,
+         y: 25,
+      }),
+   ]);
 
-const Thing = createEntity([
-   Position.new(),
-   Bounds.new(),
-   Name.new({
-      value: 'Thing',
-   }),
-]);
+const createRectangle = () =>
+   createEntity([
+      Name.new({
+         value: 'Rectangle',
+      }),
+      Velocity.new({
+         x: 5,
+         y: 0,
+      }),
+      Bounds.new({
+         width: 50,
+         height: 50,
+      }),
+      Color.new({
+         value: [75, 28, 152, 1],
+      }),
+      Position.new({
+         x: 25,
+         y: 25,
+      }),
+   ]);
 
 const world = createWorld();
-world.insert(Box);
-world.insert(Thing);
+world.insert(createBox());
+world.insert(createBox());
+world.insert(createBox());
+world.insert(createRectangle());
 
-const VelocityQuery = createQuery(
-   [Name], //
-   With(Name, Position),
-   Without(Color),
-);
+const MovementQuery = createQuery([Velocity, Position]);
+const movementSystem = () => {
+   const query = MovementQuery.exec(world);
 
-console.log(VelocityQuery.execute(world));
+   for (const [vel, pos] of query) {
+      pos.x += vel.x;
+      pos.y += vel.y;
+   }
+};
 
-// const BoundsQuery = createQuery(Bounds);
-// const ColorQuery = createQuery(Color);
-// const PositionQuery = createQuery(Position);
+const DrawQuery = createQuery([Bounds, Color, Position]);
+const drawSystem = (ctx: CanvasRenderingContext2D) => {
+   const query = DrawQuery.exec(world);
 
-// const world = createWorld();
-// world.insert(Box);
+   for (const [bounds, color, pos] of query) {
+      ctx.fillStyle = `rgba(${color.value.join(',')})`;
+      ctx.fillRect(pos.x, pos.y, bounds.width, bounds.height);
+   }
+};
 
-// const movementSystem = () => {
-//    const velocities = VelocityQuery.execute(world);
-//    const positions = PositionQuery.execute(world);
+const drawNamesOfBoxesOnScreenQuery = createQuery([Name], With(Position, Bounds));
+const drawNamesOfBoxesOnScreenSystem = (ctx: CanvasRenderingContext2D) => {
+   const query = drawNamesOfBoxesOnScreenQuery.exec(world);
 
-//    for (let index = 0; index < positions.length; index += 1) {
-//       const pos = positions[index];
-//       const vel = velocities[index];
+   const x = 15;
+   const y = 15;
 
-//       pos.x += vel.x;
-//       pos.y += vel.y;
-//    }
-// };
+   query.forEach(([name], index) => {
+      ctx.font = '15px Arial';
+      ctx.fillStyle = 'rgb(0,0,0)';
+      ctx.fillText(name.value, x, y * index + y);
+   });
+};
 
-// const drawSystem = (ctx: CanvasRenderingContext2D) => {
-//    const bounds = BoundsQuery.execute(world);
-//    const colors = ColorQuery.execute(world);
-//    const positions = PositionQuery.execute(world);
+const canvas = document.createElement('canvas');
+canvas.width = 500;
+canvas.height = 500;
+document.body.appendChild(canvas);
 
-//    for (let index = 0; index < positions.length; index += 1) {
-//       ctx.fillStyle = `rgba(${colors[index].value[0]}, ${colors[index].value[1]}, ${colors[index].value[2]}), ${colors[index].value[3]}`;
-//       ctx.fillRect(
-//          positions[index].x, //
-//          positions[index].y,
-//          bounds[index].width,
-//          bounds[index].height,
-//       );
-//    }
-// };
+const context = canvas.getContext('2d')!;
 
-// const canvas = document.createElement('canvas');
-// canvas.width = 500;
-// canvas.height = 500;
-// document.body.appendChild(canvas);
-
-// const context = canvas.getContext('2d')!;
-
-// setInterval(() => {
-//    context.clearRect(0, 0, canvas.width, canvas.height);
-//    drawSystem(context);
-//    movementSystem();
-// }, 1000 / 60);
+setInterval(() => {
+   context.clearRect(0, 0, canvas.width, canvas.height);
+   movementSystem();
+   drawSystem(context);
+   drawNamesOfBoxesOnScreenSystem(context);
+}, 1000 / 60);

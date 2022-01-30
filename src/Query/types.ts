@@ -8,8 +8,8 @@ export type GetState<C> = C extends Component<infer State>
    ? State2
    : never;
 
-export interface Query<State> {
-   execute(world: World): State[];
+export interface Query<QueryReturn> {
+   exec(world: World): QueryReturn;
    readonly id: symbol;
 }
 
