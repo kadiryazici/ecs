@@ -1,1 +1,1 @@
-# I'm trying to create an ECS framework for the first time.
+# Me trying to create an ECS library for the first time. It's like a clone of Bevy Engine's ECS.
