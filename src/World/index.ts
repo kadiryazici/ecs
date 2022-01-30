@@ -1,9 +1,9 @@
-import { EntityInstance } from '../Entity/types';
+import { Entity } from '../Entity/types';
 import { insertEntity, removeEntity } from './helpers';
 import { World } from './types';
 
 export const createWorld = (): World => {
-   const entities = [] as EntityInstance[];
+   const entities = [] as Entity[];
 
    return {
       get entities() {

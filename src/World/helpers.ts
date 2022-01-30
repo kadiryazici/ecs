@@ -1,10 +1,10 @@
-import { EntityInstance } from '../Entity/types';
+import { Entity } from '../Entity/types';
 
-export const insertEntity = (entities: EntityInstance[], entity: EntityInstance) => {
+export const insertEntity = (entities: Entity[], entity: Entity) => {
    entities.push(entity);
 };
 
-export const removeEntity = (entities: EntityInstance[], entity: EntityInstance | symbol) => {
+export const removeEntity = (entities: Entity[], entity: Entity | symbol) => {
    const id = typeof entity === 'symbol' ? entity : entity.id;
    const entityIndex = entities.findIndex((e) => e.id === id);
 

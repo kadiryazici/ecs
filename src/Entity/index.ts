@@ -1,9 +1,9 @@
 import { ComponentInstance, ComponentState } from '../Component/types';
 import { Type } from '../Type';
 import { ENTITY_PARAMETER_ERROR } from './constants';
-import { EntityInstance } from './types';
+import { Entity } from './types';
 
-export const createEntity = (_components: ComponentInstance<ComponentState>[] = []): EntityInstance => {
+export const createEntity = (_components: ComponentInstance<ComponentState>[] = []): Entity => {
    const components = _components.filter(Boolean);
 
    if (!Array.isArray(components)) throw Error(ENTITY_PARAMETER_ERROR);

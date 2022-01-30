@@ -8,6 +8,7 @@ export const defineComponent = <State extends ComponentState>(defaultState: Stat
    if (Array.isArray(defaultState)) throw Error(COMPONENT_STATE_ERROR);
 
    const id = Symbol('id');
+   const defaultStateClone = { ...defaultState };
 
    return {
       get id() {
@@ -15,6 +16,9 @@ export const defineComponent = <State extends ComponentState>(defaultState: Stat
       },
       get type() {
          return Type.Component;
+      },
+      get defaultState() {
+         return defaultStateClone;
       },
       new: (state) => {
          const mergedState = mergeComponentState<State>(defaultState, state);

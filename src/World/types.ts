@@ -1,8 +1,8 @@
-import { EntityInstance } from '../Entity/types';
+import { Entity } from '../Entity/types';
 
 export interface World {
-   insert(entity: EntityInstance): void;
-   remove(entity: EntityInstance | symbol): void;
+   insert(entity: Entity): void;
+   remove(entity: Entity | symbol): void;
    clear(): void;
-   readonly entities: EntityInstance[];
+   readonly entities: Entity[];
 }
