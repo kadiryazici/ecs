@@ -1,4 +1,4 @@
-import { ComponentInstance, ComponentState } from '../Component/types';
+import { Component, ComponentInstance, ComponentState } from '../Component/types';
 import { Type } from '../Type';
 
 export interface Entity {
@@ -6,5 +6,5 @@ export interface Entity {
    readonly type: typeof Type.Entity;
    readonly components: readonly ComponentInstance<ComponentState>[];
    insert(component: ComponentInstance<ComponentState>): void;
-   remove(component: ComponentInstance<ComponentState>): void;
+   remove(component: Component<ComponentState>): void;
 }

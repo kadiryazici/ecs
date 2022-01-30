@@ -1,4 +1,5 @@
 import { Component, ComponentInstance, ComponentState } from '../Component/types';
+import { Type } from '../Type';
 import { World } from '../World/types';
 import { QueryType } from './constants';
 
@@ -11,6 +12,7 @@ export type GetState<C> = C extends Component<infer State>
 export interface Query<QueryReturn> {
    exec(world: World): QueryReturn;
    readonly id: symbol;
+   readonly type: typeof Type.Query;
 }
 
 export type QueryModifier = {

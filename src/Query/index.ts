@@ -1,5 +1,6 @@
 import { Component, ComponentInstance } from '../Component/types';
 import { Entity } from '../Entity/types';
+import { Type } from '../Type';
 import { World } from '../World/types';
 import { QueryType } from './constants';
 import { findComponentInEntity } from './helpers';
@@ -23,6 +24,9 @@ export function createQuery<T extends [Component, ...Component[]], QueryReturn =
    return {
       get id() {
          return id;
+      },
+      get type() {
+         return Type.Query;
       },
 
       exec(world: World) {
