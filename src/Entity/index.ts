@@ -11,6 +11,11 @@ export const createEntity = (_components: ComponentInstance<ComponentState>[] = 
       throw Error(ENTITY_PARAMETER_ERROR);
    }
 
+   let componentsWillReturn = Object.freeze([...components]);
+   const resetComponentsWillReturn = () => {
+      componentsWillReturn = [...components];
+   };
+
    const id = Symbol('id');
 
    return {
@@ -20,7 +25,17 @@ export const createEntity = (_components: ComponentInstance<ComponentState>[] = 
       get type() {
          return Type.Entity;
       },
-      components: Object.freeze(components),
-      insert: (component) => components.push(component),
+      components: componentsWillReturn,
+      insert: (component) => {
+         components.push(component);
+         resetComponentsWillReturn();
+      },
+      remove: (component) => {
+         const index = components.findIndex((c) => c.id === component.id);
+         if (index >= 0) {
+            components.splice(index, 1);
+            resetComponentsWillReturn();
+         }
+      },
    };
 };

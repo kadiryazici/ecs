@@ -1,7 +1,7 @@
 import { defineComponent } from './Component';
 import { createEntity } from './Entity';
 import { createQuery } from './Query';
-import { With, Without } from './Query/helpers';
+import { With } from './Query/helpers';
 import { createWorld } from './World';
 
 const Velocity = defineComponent({

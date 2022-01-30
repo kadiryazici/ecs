@@ -6,4 +6,5 @@ export interface Entity {
    readonly type: typeof Type.Entity;
    readonly components: readonly ComponentInstance<ComponentState>[];
    insert(component: ComponentInstance<ComponentState>): void;
+   remove(component: ComponentInstance<ComponentState>): void;
 }
