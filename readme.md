@@ -13,6 +13,9 @@ pnpm add @kadiryazici/ecs
 yarn add @kadiryazici/ecs
 ```
 
+## Demo
+You can view a demo in `/demo/main.ts` and [Online](https://kadiryazici.github.io/ecs/) 
+
 ## Components
 To create component we use `defineComponent` function. This function can take `undefined` or an `object` as parameter. Given object is always default state.
 ```ts
