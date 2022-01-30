@@ -7,7 +7,7 @@ import { createWorld } from '../src/World';
 // Lets get our canvas and context.
 const canvas = document.querySelector('canvas')!;
 canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.height = (window.innerWidth / 16) * 9;
 
 document.body.style.margin = '0';
 
@@ -69,7 +69,8 @@ const movementSystem = () => {
 // A Draw system that draws boxes to canvas.
 const DrawQuery = createQuery([Position, Bounds, Color]);
 const drawSystem = () => {
-   context.clearRect(0, 0, canvas.width, canvas.height);
+   context.fillStyle = 'rgb(22, 22, 22)';
+   context.fillRect(0, 0, canvas.width, canvas.height);
 
    const query = DrawQuery.exec(world);
 
@@ -101,16 +102,26 @@ const outOfScreenSystem = () => {
 canvas.addEventListener('mousedown', (e) => {
    const query = PositionsQuery.exec(world);
 
+   const { top, left } = canvas.getBoundingClientRect();
+
+   const x = e.clientX - left;
+   const y = e.clientY - top;
+
    for (const [pos, bounds, vel] of query) {
       if (
-         e.clientX >= pos.x &&
-         e.clientX <= pos.x + bounds.width &&
-         e.clientY >= pos.y &&
-         e.clientY <= pos.y + bounds.height
+         x >= pos.x && //
+         x <= pos.x + bounds.width &&
+         y >= pos.y &&
+         y <= pos.y + bounds.height
       ) {
          vel.y *= -1;
       }
    }
+});
+
+window.addEventListener('resize', () => {
+   canvas.width = window.innerWidth;
+   canvas.height = (window.innerWidth / 16) * 9;
 });
 
 const update = () => {
