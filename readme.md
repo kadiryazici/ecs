@@ -2,6 +2,17 @@
 
 This was a challange for me, I have never created an ECS before and wanted to test myself. It doesn't provide `THE BEST PERFORMANCE` but I think it is easy to understand.
 
+## Installation
+```
+npm install @kadiryazici/ecs
+```
+```
+pnpm add @kadiryazici/ecs
+```
+```
+yarn add @kadiryazici/ecs
+```
+
 ## Components
 To create component we use `defineComponent` function. This function can take `undefined` or an `object` as parameter. Given object is always default state.
 ```ts
