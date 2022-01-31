@@ -9,14 +9,14 @@ const productionConfig = defineConfig({
    plugins: [
       DTS({
          outputDir: 'dist',
+         tsConfigFilePath: path.resolve(root, 'tsconfig.build.json'),
       }),
    ],
    build: {
       target: 'es2020',
       lib: {
          entry: path.resolve(root, 'src', 'lib.ts'),
-         name: 'ecs',
-         formats: ['es', 'umd'],
+         formats: ['es', 'cjs'],
       },
    },
 });
