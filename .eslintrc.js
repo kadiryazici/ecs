@@ -19,6 +19,8 @@ const config = {
       'import/extensions': 'off',
       'import/no-absolute-path': 'off',
       'import/no-unresolved': 'off',
+      'no-underscore-dangle': 'off',
+      'no-useless-constructor': 'off',
 
       // React JSX rules that we don't care about while using vue.
       'react/function-component-definition': 'off',

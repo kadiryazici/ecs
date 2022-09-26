@@ -1,5 +1,5 @@
 import { defineComponent } from '../src/Component';
-import { createEntity } from '../src/Entity';
+import { createEntity, EntityId } from '../src/Entity';
 import { With } from '../src/lib';
 import { createQuery } from '../src/Query';
 import { createWorld } from '../src/World';
@@ -56,22 +56,16 @@ const Color = defineComponent({
 
 // A helper function to create a box.
 const createBox = (x = 0, y = 0, gravity = 250) =>
-   createEntity([
-      Velocity.new({ y: gravity }),
-      Position.new({ x, y }),
-      Bounds.new({
-         width: 50,
-         height: 50,
-      }),
-      Color.new({
-         value: 'rgb(152, 93, 115)',
-      }),
-   ]);
+   createEntity()
+      .add(Velocity.create({ y: gravity }))
+      .add(Position.create({ x, y }))
+      .add(Bounds.create({ width: 50, height: 50 }))
+      .add(Color.create({ value: 'rgb(152, 93, 115)' }));
 
 const world = createWorld();
 
-world.insert(createBox(50, 75));
-world.insert(createBox(150, 125, -250));
+world.add(createBox(50, 75));
+world.add(createBox(150, 125, -250));
 
 // A MovementSystem that updates positions by velocity.
 const MovementQuery = createQuery([Position, Velocity], With(Bounds));
@@ -133,6 +127,27 @@ canvas.addEventListener('mousedown', (e) => {
          y <= pos.y + bounds.height
       ) {
          vel.y *= -1;
+      }
+   }
+});
+
+const PositionAndIdQuery = createQuery([Position, Bounds, EntityId]);
+canvas.addEventListener('dblclick', (e) => {
+   const query = PositionAndIdQuery.exec(world);
+
+   const { top, left } = canvas.getBoundingClientRect();
+
+   const x = e.clientX - left;
+   const y = e.clientY - top;
+
+   for (const [pos, bounds, eid] of query) {
+      if (
+         x >= pos.x && //
+         x <= pos.x + bounds.width &&
+         y >= pos.y &&
+         y <= pos.y + bounds.height
+      ) {
+         world.remove(eid);
       }
    }
 });

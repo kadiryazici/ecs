@@ -1,4 +1,3 @@
-import exp from 'constants';
 import { beforeEach, expect, it } from 'vitest';
 import { createQuery, createEntity, createWorld, defineComponent, With, Without } from '../src/lib';
 
@@ -28,36 +27,35 @@ const Shape = defineComponent({
 const world = createWorld();
 
 const insertDefaultEntities = () => {
-   world.insert(
-      createEntity([
-         KinematicBody.new(),
-         Name.new({
-            value: 'Player',
-         }),
-      ]),
+   world.add(
+      createEntity()
+         .add(KinematicBody.create())
+         .add(
+            Name.create({
+               value: 'Player',
+            }),
+         ),
    );
 
-   world.insert(
-      createEntity([
-         Transform.new({
-            x: 5,
-         }),
-         Name.new({
-            value: 'Player',
-         }),
-      ]),
+   world.add(
+      createEntity()
+         .add(
+            Transform.create({
+               x: 5,
+            }),
+         )
+         .add(
+            Name.create({
+               value: 'Player',
+            }),
+         ),
    );
 
-   world.insert(
-      createEntity([
-         KinematicBody.new(),
-         Transform.new({
-            y: 4,
-         }),
-         Name.new({
-            value: 'Enemy',
-         }),
-      ]),
+   world.add(
+      createEntity()
+         .add(KinematicBody.create())
+         .add(Transform.create({ y: 4 }))
+         .add(Name.create({ value: 'Enemy' })),
    );
 };
 
@@ -66,23 +64,19 @@ beforeEach(() => {
 });
 
 it('should run simple query', () => {
-   world.insert(
-      createEntity([
-         Shape.new(), //
-         Velocity.new(),
-         KinematicBody.new(),
-      ]),
+   world.add(
+      createEntity() //
+         .add(Shape.create())
+         .add(Velocity.create())
+         .add(KinematicBody.create()),
    );
 
-   world.insert(
-      createEntity([
-         Shape.new({
-            value: 'circle',
-         }), //
-         Velocity.new(),
-         RigidBody.new(),
-         Transform.new(),
-      ]),
+   world.add(
+      createEntity()
+         .add(Shape.create({ value: 'circle' }))
+         .add(Velocity.create())
+         .add(RigidBody.create())
+         .add(Transform.create()),
    );
 
    const ShapeQuery = createQuery([Shape]);
@@ -129,16 +123,11 @@ it('should query with `Without` modifier', () => {
 it('should mix With and Without modifiers', () => {
    insertDefaultEntities();
 
-   world.insert(
-      createEntity([
-         KinematicBody.new(),
-         Transform.new({
-            y: 4,
-         }),
-         Name.new({
-            value: 'Dude',
-         }),
-      ]),
+   world.add(
+      createEntity()
+         .add(KinematicBody.create())
+         .add(Transform.create({ y: 4 }))
+         .add(Name.create({ value: 'Dude' })),
    );
 
    const Query = createQuery([Name], With(KinematicBody), Without(Transform));

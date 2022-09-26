@@ -1,38 +1,52 @@
-import { ComponentInstance, ComponentState } from '../Component/types';
-import { Type } from '../Type';
-import { ENTITY_ALREADY_HAS_THE_COMPONENT, ENTITY_PARAMETER_ERROR } from './constants';
-import { Entity } from './types';
+import { Component, ComponentDescriptor, DefaultStateType } from '../Component';
 
-export const createEntity = (_components: ComponentInstance<ComponentState>[] = []): Entity => {
-   let components = _components.filter(Boolean);
+export const EntityId = Symbol('EntityId');
 
-   if (!Array.isArray(components)) throw Error(ENTITY_PARAMETER_ERROR);
-   if (components.length > 0 && !components.every((c) => c.type === Type.Component)) {
-      throw Error(ENTITY_PARAMETER_ERROR);
+export class Entity {
+   public components: ComponentDescriptor[] = [];
+
+   public id = Symbol('Entity');
+
+   private _findIndex(componentOrDesc: ComponentDescriptor | Component) {
+      if (componentOrDesc instanceof Component) {
+         return this.components.findIndex((componentDesc) => componentOrDesc.id === componentDesc.componentId);
+      }
+      return this.components.findIndex((comp) => componentOrDesc.id === comp.id);
    }
 
-   const id = Symbol('id');
+   public add(componentOrDesc: ComponentDescriptor) {
+      const componentIndex = this.components.findIndex((c) => c.componentId === componentOrDesc.componentId);
+      if (componentIndex >= 0) {
+         this.components[componentIndex] = componentOrDesc;
+      } else {
+         this.components.push(componentOrDesc);
+      }
 
-   return {
-      get id() {
-         return id;
-      },
-      get type() {
-         return Type.Entity;
-      },
-      get components() {
-         return components;
-      },
-      insert: (component) => {
-         const componentIndex = components.findIndex((c) => c.id === component.id);
-         if (componentIndex >= 0) {
-            // eslint-disable-next-line no-console
-            console.error(ENTITY_ALREADY_HAS_THE_COMPONENT);
-         } //
-         else components.push(component);
-      },
-      remove: (component) => {
-         components = components.filter((c) => c.id !== component.id);
-      },
-   };
-};
+      return this;
+   }
+
+   public remove(componentOrDesc: Component | ComponentDescriptor) {
+      const index = this._findIndex(componentOrDesc);
+
+      if (index >= 0) {
+         this.components.splice(index, 1);
+      }
+
+      return this;
+   }
+
+   public find<State extends DefaultStateType = DefaultStateType>(
+      componentOrDesc: Component<State> | ComponentDescriptor<State>,
+   ): ComponentDescriptor<State> | null {
+      const index = this._findIndex(componentOrDesc);
+
+      if (index >= 0) return this.components[index] as ComponentDescriptor<State>;
+      return null;
+   }
+
+   public has(componentOrDesc: Component | ComponentDescriptor): boolean {
+      return this._findIndex(componentOrDesc) >= 0;
+   }
+}
+
+export const createEntity = () => new Entity();

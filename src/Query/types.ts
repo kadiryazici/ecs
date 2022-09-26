@@ -1,26 +1,15 @@
-import { Component, ComponentInstance, ComponentState } from '../Component/types';
-import { Type } from '../Type';
-import { World } from '../World/types';
-import { QueryType } from './constants';
+import { Component } from '../Component';
+import { Modifier } from './constants';
+import type { EntityId } from '../Entity';
 
-export type GetState<C> = C extends Component<infer State>
-   ? State
-   : C extends ComponentInstance<infer State2>
-   ? State2
-   : never;
-
-export interface Query<QueryReturn> {
-   exec(world: World): QueryReturn;
-   readonly id: symbol;
-   readonly type: typeof Type.Query;
-}
+export type QueryComponents = [Component | typeof EntityId, ...(Component | typeof EntityId)[]];
 
 export type QueryModifier = {
-   type: QueryType;
-   components: Component<ComponentState>[];
+   type: Modifier;
+   components: Component[];
 };
 
-type GetDefaultState<T> = T extends Component ? T['defaultState'] : never;
+type GetDefaultState<T> = T extends Component<infer State> ? State : T extends typeof EntityId ? T : never;
 
 export type MapQueryReturn<T extends unknown[]> = T extends [infer First, ...infer Rest]
    ? [GetDefaultState<First>, ...MapQueryReturn<Rest>]
