@@ -318,9 +318,3 @@ function gameLoop() {
    gameLoop();
 }
 ```
-
-## Example
-
-You can view a simple example app [here](https://github.com/kadiryazici/ecs/blob/main/demo/main.ts)
-
-Or you can clone the repo install the dependencies `pnpm install` and see example working locally `pnpm dev`.
