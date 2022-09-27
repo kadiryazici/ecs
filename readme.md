@@ -193,7 +193,7 @@ const NameQueryWithVelocity = createQuery([Name], With(Velocity, Bounds, SomeCom
 
 function somethingSystem() {
    const query = NameQueryWithVelocity.exec(world);
-   for(const [name], of query) {
+   for(const [name] of query) {
       ...
    }
 }
@@ -208,12 +208,9 @@ const NameBoundsQuery = createQuery([Name, Bounds], With(Velocity, SomeComponent
 
 function somethingSystem() {
    const query = NameBoundsQuery.exec(world);
-   for(const [name, bounds], of query) {
+   for (const [name, bounds] of query) {
       something(name.value);
-      draw(
-         bounds.width,
-         bounds.height
-      )
+      draw(bounds.width, bounds.height);
    }
 }
 ```
@@ -292,7 +289,7 @@ For example if you want to remove enemies that player shot you need to remove en
 import { EntityId, World} from '@kadiryazici/ecs';
 
 const BulletPositionsQuery = createQuery([Position], With(Bullet));
-const EnemyPositionsQuery = createQuery([Position, EntityId], With(Bullet));
+const EnemyPositionsQuery = createQuery([Position, EntityId], With(Enemy));
 
 function collisionSystem(world: World) {
    const bulletPositions = PlayerPositionQuery.exec(world);
