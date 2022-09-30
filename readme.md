@@ -22,26 +22,28 @@ You can view a demo in `/demo/main.ts` and [Online](https://kadiryazici.github.i
 
 ## Components
 
-To create component we use `defineComponent` function. This function can take `undefined` or an `object` as parameter. Given object is always default state.
+To create component we use `defineComponent` function. This function can take `undefined` or a `function` that returns an `object` as parameter. The reason why parameter is a function is not to have reference issues with default states because when a component created, default values are placed if missing.
 
 ```ts
 import { defineComponent } from '@kadiryazici/ecs';
 
-const Velocity = defineComponent({
+const Velocity = defineComponent(() => ({
    x: 0,
    y: 0,
-});
+}));
+
+// Can be used to tag entities, has no state.
+const Player = defineComponent();
 ```
 
 We created a component, now it's time to create an instance of it, then we will use it in Entities.
 
 ```ts
-// if you give undefined or {}, Velocity will have default state {x: 0, y,: 0}
+// if you give undefined or {}, Velocity will have default state { x: 0, y,: 0 }
 const baseVelocity = Velocity.create();
 baseVelocity.state; // { x: 0, y: 0 }
 
 // You can override some default values
-
 const baseVelocity = Velocity.create({ x: 50 });
 baseVelocity.state; // { x: 50, y: 0 }
 ```
@@ -55,14 +57,14 @@ Entities contain components for systems to query them. To create an entity we us
 ```ts
 import { defineComponent, createEntity } from '@kadiryazici/ecs';
 
-const Velocity = defineComponent({
+const Velocity = defineComponent(() => ({
    x: 0,
    y: 50,
-});
+}));
 
-const Name = defineComponent({
+const Name = defineComponent(() => ({
    value: '',
-});
+}));
 
 const Player = createEntity()
    .add(Velocity.create({ x: 25 }))
@@ -90,7 +92,7 @@ Player.remove(Name);
 
 ## World
 
-World is owner of systems. It contains every entity created.
+World is a store of entities. It stores every `unique` entity in a `Set`.
 
 ```ts
 import { createWorld } from '@kadiryazici/ecs';
@@ -101,12 +103,13 @@ const world = createWorld();
 To add an entity to our world we can use `add` function.
 
 ```ts
-world.add(createPlayer());
-world.add(
-   createEntity()
-      .add(Velocity.create())
-      .add(Name.create({ value: 'Enemy' })),
-);
+world
+   .add(createPlayer());
+   .add(
+      createEntity()
+         .add(Velocity.create())
+         .add(Name.create({ value: 'Enemy' })),
+   );
 ```
 
 Nice! now we know how to create Entities, Worlds and Components, now it's time to learn how to create and run queries.
@@ -120,7 +123,7 @@ You can mutate components' state after iterating query result, that's why compon
 ```ts
 import { createQuery } from '@kadiryazici/ecs';
 
-// This query will search for entities that has Name component, and will return an array of [name];
+// This query will search for entities that has Name component, and will return an array of tuple: [name][].
 const VelocityQuery = createQuery([Name]);
 
 function somethingSystem() {
@@ -138,6 +141,8 @@ function somethingSystem() {
       name.value = 'Now your name is xXxMurdererxXx2010';
    }
 
+   // You can use forEach too, it's just an array.
+   // But personally I prefer for...of.
    query.forEach(([name]) => {
       name.value = 'Or you can use forEach, but for...of better.';
    });
@@ -172,10 +177,10 @@ For this we can use `With` modifier.
 import { defineComponent, createQuery, With } from '@kadiryazici/ecs';
 
 // Lets create a third component for our queries.
-const Bounds = defineComponent({
+const Bounds = defineComponent(() => ({
    width: 0,
    height: 0,
-});
+}));
 
 /*
    First parameter should always be a tuple/array of components we want to receive.
@@ -184,12 +189,12 @@ const Bounds = defineComponent({
 const NameQueryWithVelocity = createQuery([Name], With(Velocity));
 ```
 
-With modifier can have infinite number of components.
+`With` modifier can get infinite number of component arguments.
 
 ```ts
 import { createQuery, With } from '@kadiryazici/ecs';
 
-const NameQueryWithVelocity = createQuery([Name], With(Velocity, Bounds, SomeComponent));
+const NameQueryWithVelocity = createQuery([Name], With(Velocity, Bounds));
 
 function somethingSystem() {
    const query = NameQueryWithVelocity.exec(world);
@@ -217,6 +222,8 @@ function somethingSystem() {
 
 If you want you can repeat modifiers, they will be merged when the query executes.
 
+It will be `With(Shadow, Light, Foot, Head)`.
+
 ```ts
 import { createQuery } from '@kadiryazici/ecs';
 
@@ -233,6 +240,7 @@ import { createQuery, Without, With } from '@kadiryazici/ecs';
 const NameQuery = createQuery([Name], Without(Velocity, Bounds));
 
 // Can be used multiple times as well
+// Will be converted into `Without(Bounds, Velocity)`
 const NameQuery = createQuery([Name], Without(Velocity), Without(Bounds));
 
 // Can be mixed with With modifier.
@@ -249,21 +257,23 @@ function somethingSystem() {
 
 ## Systems
 
-Systems are just `functions` that run queries and manages its states'. You actually learned how to create systems above.
+Systems are just `functions` that run queries and manages their states. You actually learned how to create systems above.
 
 Let's create a `System` that updates `Position` by `Velocity` of Entities that has `RigidBody` component but don't have `FixedBody`.
 
 ```ts
 import { createQuery, With, Without, createWorld, createEntity } from '@kadiryazici/ecs';
+import type { World } from '@kadiryazici/ecs';
 
 const PositionVelocityQuery = createQuery([Position, Velocity], With(RigidBody), Without(FixedBody));
 
-function movementSystem(world) {
+// Systems are just functions, you can pass them whatever you want.
+function movementSystem(world: World, delta: number) {
    const query = PositionVelocityQuery.exec(world);
 
    for (const [position, velocity] of query) {
-      position.x += velocity.x;
-      posiyion.y += velocity.y;
+      position.x += velocity.x * delta;
+      posiyion.y += velocity.y * delta;
    }
 }
 
@@ -276,12 +286,12 @@ world.add(
       .add(RigidBody.new()),
 );
 
-movementSystem(world);
+movementSystem(world, Game.getDeltaTime());
 ```
 
 ## Special Component `EntityId`
 
-If you want to query entities that matches the query you can use this component.
+If you also want to receive `Entity ID` from query you can use this special component.
 
 For example if you want to remove enemies that player shot you need to remove entity from the world.
 
@@ -297,7 +307,7 @@ function collisionSystem(world: World) {
 
    for (const [bulletPosition] of bulletPositions) {
       for (const [enemyPosition, enemyEID] of enemyPositions) {
-         if (isColliding(bulletPosition, enemyPosition)) {
+         if (isColliding(bulletPosition.value, enemyPosition.value)) {
             // Bullet hit th enemy, so we remove it.
             world.remove(enemyEID);
          }
@@ -307,11 +317,14 @@ function collisionSystem(world: World) {
 
 function gameLoop() {
    ...
-   // you can make systems dynamic, you don't have to keep a reference to the world all the time.
    somethingSystem();
+   // you can make systems with arguments, you don't have to keep a reference to the world all the time.
    collisionSystem(world);
    ...
 
    gameLoop();
 }
 ```
+
+## Example Project
+You can see a little complicated example in my other repo: [Bomberman Clone](https://github.com/kadiryazici/bomberman)

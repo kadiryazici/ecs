@@ -2,7 +2,7 @@ import { expect, it } from 'vitest';
 import { defineComponent, Component } from '../src/lib';
 
 it('Should check a component is a component', () => {
-   const Velocity = defineComponent({});
+   const Velocity = defineComponent();
 
    expect(Velocity instanceof Component).toBe(true);
 
@@ -11,10 +11,10 @@ it('Should check a component is a component', () => {
 });
 
 it('Should check component state', () => {
-   const Position = defineComponent({
+   const Position = defineComponent(() => ({
       x: 0,
       y: 0,
-   });
+   }));
 
    const instance1 = Position.create();
    expect(instance1.state).toEqual({ x: 0, y: 0 });

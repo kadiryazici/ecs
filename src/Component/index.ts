@@ -12,13 +12,14 @@ export interface ComponentDescriptor<State = DefaultStateType> {
 }
 
 export class Component<State extends DefaultStateType = DefaultStateType> {
-   private _defultState = Object.preventExtensions({} as State);
+   private _defultState = {} as State;
 
    public id = Symbol('ComponentId');
 
-   constructor(defaultState?: State) {
-      if (isObject<State>(defaultState)) {
-         this._defultState = Object.preventExtensions({ ...defaultState });
+   constructor(defaultState: () => State = () => ({} as State)) {
+      const state = defaultState();
+      if (isObject<State>(state)) {
+         this._defultState = Object.preventExtensions(state);
       }
    }
 
@@ -31,6 +32,8 @@ export class Component<State extends DefaultStateType = DefaultStateType> {
    }
 }
 
-export function defineComponent<State extends Record<PropertyKey, unknown>>(defaultState?: State) {
+export function defineComponent<State extends DefaultStateType = DefaultStateType>(
+   defaultState: () => State = () => ({} as State),
+) {
    return new Component(defaultState);
 }

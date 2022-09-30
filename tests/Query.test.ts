@@ -1,28 +1,27 @@
 import { beforeEach, expect, it } from 'vitest';
 import { createQuery, createEntity, createWorld, defineComponent, With, Without } from '../src/lib';
 
-const Velocity = defineComponent({
+const Velocity = defineComponent(() => ({
    x: 0,
    y: 0,
-});
+}));
 
-const RigidBody = defineComponent({});
+const RigidBody = defineComponent();
+const KinematicBody = defineComponent();
 
-const KinematicBody = defineComponent({});
-
-const Transform = defineComponent({
+const Transform = defineComponent(() => ({
    x: 0,
    y: 0,
    z: 0,
-});
+}));
 
-const Name = defineComponent({
+const Name = defineComponent(() => ({
    value: '',
-});
+}));
 
-const Shape = defineComponent({
+const Shape = defineComponent(() => ({
    value: 'rectangle' as 'rectangle' | 'circle',
-});
+}));
 
 const world = createWorld();
 

@@ -35,24 +35,24 @@ let oldTime = Date.now();
 let delta = 0;
 
 // Create components we need.
-const Position = defineComponent({
+const Position = defineComponent(() => ({
    x: 0,
    y: 0,
-});
+}));
 
-const Velocity = defineComponent({
+const Velocity = defineComponent(() => ({
    x: 0,
    y: 0,
-});
+}));
 
-const Bounds = defineComponent({
+const Bounds = defineComponent(() => ({
    width: 0,
    height: 0,
-});
+}));
 
-const Color = defineComponent({
+const Color = defineComponent(() => ({
    value: '#000',
-});
+}));
 
 // A helper function to create a box.
 const createBox = (x = 0, y = 0, gravity = 250) =>
