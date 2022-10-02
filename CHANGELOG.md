@@ -1,5 +1,5 @@
 # 1.1.1
-  - Added `Optional` query modifier for query data and With modifier.
+  - Added `Optional` query modifier for query components.
   - Added `findEntity` method to `World`.
 
 <br>

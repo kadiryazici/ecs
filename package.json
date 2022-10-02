@@ -1,6 +1,6 @@
 {
    "name": "@kadiryazici/ecs",
-   "version": "1.1.0",
+   "version": "1.1.1",
    "main": "./dist/ecs.cjs",
    "module": "./dist/ecs.mjs",
    "types": "./dist/src/lib.d.ts",
