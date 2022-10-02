@@ -1,4 +1,4 @@
-import { Entity, EntityId } from '../Entity';
+import { Entity } from '../Entity';
 
 export class World {
    public entities: Set<Entity> = new Set();
