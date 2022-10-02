@@ -1,5 +1,6 @@
 import { beforeEach, expect, it } from 'vitest';
 import { createQuery, createEntity, createWorld, defineComponent, With, Without } from '../src/lib';
+import { Optional } from '../src/Query/helpers';
 
 const Velocity = defineComponent(() => ({
    x: 0,
@@ -134,4 +135,23 @@ it('should mix With and Without modifiers', () => {
 
    expect(query).length(1);
    expect(query).toEqual([[{ value: 'Player' }]]);
+});
+
+it('should return null or state for Optional modifiers', () => {
+   // eslint-disable-next-line @typescript-eslint/no-shadow
+   const world = createWorld();
+
+   const entity = createEntity().add(Name.create({ value: 'Kadir' }));
+
+   world.add(entity);
+
+   const Query = createQuery([Name, Optional(Velocity)]);
+   let query = Query.exec(world);
+
+   expect(query).length(1);
+   expect(query[0]).toEqual([{ value: 'Kadir' }, undefined]);
+   entity.add(Velocity.create({ x: 0, y: 0 }));
+
+   query = Query.exec(world);
+   expect(query[0]).toEqual([{ value: 'Kadir' }, { x: 0, y: 0 }]);
 });

@@ -326,5 +326,30 @@ function gameLoop() {
 }
 ```
 
+## Marking component optional with `Optional(component: Component)`
+Lets assume that you want to receive `Name` and `Velocity` states but optionally `Player` component to check if it is Player. You can do this by creating two separate queries but it isn't nice to use.
+
+For this we have an `Optional` modifier, you can mark a component as optional and you receive `null` or `state` of component.
+
+```ts
+import { type World, createEntity, defineComponent, Optional } from '@kadiryazici/ecs';
+
+const Name = defineComponent(() => ({ value: '' }));
+const Velocity = defineComponent(() => ({ value: new Vec2(0, 0) }));
+const Player = defineComponent();
+
+const NameAndVelocityQuery = createQuery([Name, Velocity, Optional(Player)]);
+
+function loggerSystem(world: World) {
+   const query = NameAndVelocityQuery.exec(world)
+
+   // player will be undefined or an empty object.
+   for (const [name, velocity, player] of query) {
+      if(player !== undefined) // Player exists for this entity.
+   }
+}
+```
+
+
 ## Example Project
 You can see a little complicated example in my other repo: [Bomberman Clone](https://github.com/kadiryazici/bomberman)

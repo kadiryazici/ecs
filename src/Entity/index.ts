@@ -37,11 +37,11 @@ export class Entity {
 
    public find<State extends DefaultStateType = DefaultStateType>(
       componentOrDesc: Component<State> | ComponentDescriptor<State>,
-   ): ComponentDescriptor<State> | null {
+   ): ComponentDescriptor<State> | undefined {
       const index = this._findIndex(componentOrDesc);
 
       if (index >= 0) return this.components[index] as ComponentDescriptor<State>;
-      return null;
+      return undefined;
    }
 
    public has(componentOrDesc: Component | ComponentDescriptor): boolean {

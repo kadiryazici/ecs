@@ -1,10 +1,11 @@
 import { Component } from '../Component';
 import { Entity, EntityId } from '../Entity';
+import { typeOf } from '../utils';
 import { World } from '../World';
-import { Modifier } from './constants';
-import type { QueryComponents, MapQueryReturn, QueryModifier } from './types';
+import { Modifier, OptionalSym } from './constants';
+import type { QueryComponentsTuple, MapQueryReturn, QueryModifier, OptionalModifier } from './types';
 
-export class Query<T extends QueryComponents> {
+export class Query<T extends QueryComponentsTuple> {
    private _modifiers: QueryModifier[] = [];
 
    private _withComponents = new Set<Component>();
@@ -44,66 +45,16 @@ export class Query<T extends QueryComponents> {
       return matchingEntities.map((entity) => {
          return this._components.map((component) => {
             if (component === EntityId) return entity.id;
-            return entity.find(component)!.state;
+            if (component instanceof Component) return entity.find(component)!.state;
+            if (typeOf<OptionalModifier>(component, 'Object') && component.type === OptionalSym) {
+               return entity.find(component.value)?.state;
+            }
+            return undefined;
          });
       }) as MapQueryReturn<T>[];
    }
-
-   // public exec(world: World) {
-   //    let foundEntities = [] as (Entity | null)[];
-
-   //    for (const entity of world.entities) {
-   //       const foundComponents = [] as (ComponentDescriptor | null)[];
-
-   //       for (const component of this._components) {
-   //          entity.find(component);
-   //       }
-
-   //       if (foundComponents.every(Boolean)) {
-   //          foundEntities.push(entity);
-   //       }
-   //    }
-
-   //    foundEntities = foundEntities.map((entity) => {
-   //       if (entity) {
-   //          const foundComponents = [] as (ComponentInstance | null)[];
-
-   //          for (const component of withModifiers) {
-   //             foundComponents.push(findComponentInEntity(entity, component));
-   //          }
-
-   //          if (foundComponents.every(Boolean)) {
-   //             return entity;
-   //          }
-   //       }
-
-   //       return null!;
-   //    });
-
-   //    foundEntities = foundEntities.map((entity) => {
-   //       if (entity) {
-   //          const foundComponents = [] as (ComponentInstance | null)[];
-
-   //          for (const component of withoutModifiers) {
-   //             foundComponents.push(findComponentInEntity(entity, component));
-   //          }
-
-   //          if (foundComponents.some(Boolean)) {
-   //             return null!;
-   //          }
-   //       }
-
-   //       return entity;
-   //    });
-
-   //    return (foundEntities.filter(Boolean) as Entity[]).map((entity) => {
-   //       return queryComponents.map((component) => {
-   //          return entity.components.find((c) => c.id === component.id)!.state;
-   //       });
-   //    }) as unknown as QueryReturn[];
-   // }
 }
 
-export function createQuery<T extends QueryComponents>(components: T, ...modifiers: QueryModifier[]) {
+export function createQuery<T extends QueryComponentsTuple>(components: T, ...modifiers: QueryModifier[]) {
    return new Query(components, ...modifiers);
 }
