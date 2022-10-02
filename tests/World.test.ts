@@ -12,6 +12,8 @@ it('should check features of world', () => {
    world.add(Player);
    expect(world.entities.size).toBe(1);
 
+   expect(world.findEntity(Player.id)).to.be.eq(Player);
+
    world.remove(Player);
    expect(world.entities.size).toBe(0);
 });

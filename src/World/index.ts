@@ -1,4 +1,4 @@
-import { Entity } from '../Entity';
+import { Entity, EntityId } from '../Entity';
 
 export class World {
    public entities: Set<Entity> = new Set();
@@ -27,6 +27,10 @@ export class World {
    public clear() {
       this.entities.clear();
       return this;
+   }
+
+   public findEntity(eid: symbol): Entity | undefined {
+      return [...this.entities].find((entity) => entity.id === eid);
    }
 }
 
